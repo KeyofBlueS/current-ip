@@ -65,4 +65,6 @@ e seguire le istruzioni su schermo.
 
 --send-ip     Avvia la procedura di invio del file contenente gli indirizzi ip del server, tramite il metodo impostato
               nella SEZIONE CONFIGURAZIONE.
+
+--help        Visualizza una descrizione ed opzioni di current-ip
 ```
