@@ -14,7 +14,7 @@ conoscere l'attuale indirizzo ip pubblico del server per poter effettuare una co
 ### INSTALLAZIONE
 ```sh
 sudo mkdir -p /opt/scripts/
-sudo cp /percorso/dello/script/script/current_ip.sh /opt/scripts/current_ip.sh
+sudo cp /percorso/dello/script/current_ip.sh /opt/scripts/current_ip.sh
 sudo chmod +x /opt/scripts/current_ip.sh
 sudo ln -s /opt/scripts/current_ip.sh /usr/local/bin/current-ip
 ```
