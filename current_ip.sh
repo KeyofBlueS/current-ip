@@ -20,7 +20,7 @@ exit 0
 
 ######################################### FINE SEZIONE CONFIGURAZIONE ######################################################################
 
-for name in curl dnsutils
+for name in curl
 do
   [[ $(which $name 2>/dev/null) ]] || { echo -en "\n$name è richiesto da questo script. Utilizza 'sudo apt-get install $name'";deps=1; }
 done
