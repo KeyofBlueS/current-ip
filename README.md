@@ -71,3 +71,7 @@ e seguire le istruzioni su schermo.
 
 --help        Visualizza una descrizione ed opzioni di current-ip
 ```
+
+### Nota
+Per collegarsi al server ssh, consiglio fortemente (i due script si integrano a vicenda) di
+utilizzare [ssh-servers](https://github.com/KeyofBlueS/ssh-servers)
