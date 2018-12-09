@@ -8,7 +8,7 @@
 ######################################## INIZIO SEZIONE CONFIGURAZIONE #####################################################################
 
 ### Inserire il percorso locale in cui verrà salvato il file (contenente gli indirizzi ip del server) che verrà generato da questo script
-CURRENT_PATH=$HOME/.storagesystem/Dropbox/
+CURRENT_PATH=$HOME/
 
 ### Nella seguente funzione, inserire il metodo più congeniale per l'invio del file contenente gli indirizzi ip del server
 ### Se non si ha intenzione di inviarlo, lasciare soltanto exit 0
