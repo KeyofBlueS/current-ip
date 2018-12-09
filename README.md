@@ -13,8 +13,11 @@ conoscere l'attuale indirizzo ip pubblico del server per poter effettuare una co
 
 ### INSTALLAZIONE
 ```sh
+curl -o /tmp/current_ip.sh 'https://raw.githubusercontent.com/KeyofBlueS/current-ip/master/current_ip.sh'
 sudo mkdir -p /opt/current-ip/
-sudo cp /percorso/dello/script/current_ip.sh /opt/current-ip/current_ip.sh
+sudo mv /tmp/current_ip.sh /opt/current-ip/
+sudo chown root:root /opt/current-ip/current_ip.sh
+sudo chmod 755 /opt/current-ip/current_ip.sh
 sudo chmod +x /opt/current-ip/current_ip.sh
 sudo ln -s /opt/current-ip/current_ip.sh /usr/local/bin/current-ip
 ```
