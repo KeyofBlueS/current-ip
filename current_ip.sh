@@ -201,18 +201,17 @@ possiede alcun metodo di default, lascio all'utente l'inserimento del proprio me
 ### UTILIZZO
 Per rendere il processo automatico consiglio di impostare crontab nel seguente modo, in modo da interrogare ogni servizio a
 distanza di un'ora:
-```sh
+
 PATH=/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/bin
 0 * * * * current-ip --current-1 > /dev/null 2>&1 &
 15 * * * * current-ip --current-2 > /dev/null 2>&1 &
 30 * * * * current-ip --current-3 > /dev/null 2>&1 &
 45 * * * * current-ip --current-4 > /dev/null 2>&1 &
-```
 
 Per utilizzare manualmente lo script basta digitare su un terminale:
-```sh
+
 $ current-ip
-```
+
 e seguire le istruzioni su schermo.
 
 È possibile utilizzare le seguenti opzioni:
