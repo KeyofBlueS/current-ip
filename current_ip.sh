@@ -178,16 +178,42 @@ Indirizzo ip ($NUM) non reperibile, il sito è\e[0m" "\e[1;31mOFFLINE o rete non
 
 givemehelp(){
 echo "
+# current-ip
+
+# Version:    1.0.0
+# Author:     KeyofBlueS
+# Repository: https://github.com/KeyofBlueS/current-ip
+# License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
+
+### DESCRIZIONE
 Questo script permette ad un server di reperire il proprio indirizzo ip pubblico (attualmente, per rindondanza, con quattro
 metodi distinti), salvarlo in locale su un file ed eventualmente inviare quest'ultimo all'esterno. Utile principalmente se
 il fornitore della connessione internet del server assegna un indirizzo ip dinamico, di conseguenza un client deve
 conoscere l'attuale indirizzo ip pubblico del server per poter effettuare una connessione (ad esempio ssh).
 
+### CONFIGURAZIONE
 Nella SEZIONE CONFIGURAZIONE dello script è possibile impostare il percorso locale in cui verrà salvato il file (contenente
 gli indirizzi ip del server) che verrà generato da questo script (di default è $HOME/).
 Ma più importante è inserire un metodo valido per l'upload del file contenente gli indirizzi ip del server. current-ip non
 possiede alcun metodo di default, lascio all'utente l'inserimento del proprio metodo più congeniale per l'invio del file
 (ad esempio tramite email, upload su un server ftp, upload su un servizio cloud ecc...)
+
+### UTILIZZO
+Per rendere il processo automatico consiglio di impostare crontab nel seguente modo, in modo da interrogare ogni servizio a
+distanza di un'ora:
+```sh
+PATH=/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/bin
+0 * * * * current-ip --current-1 > /dev/null 2>&1 &
+15 * * * * current-ip --current-2 > /dev/null 2>&1 &
+30 * * * * current-ip --current-3 > /dev/null 2>&1 &
+45 * * * * current-ip --current-4 > /dev/null 2>&1 &
+```
+
+Per utilizzare manualmente lo script basta digitare su un terminale:
+```sh
+$ current-ip
+```
+e seguire le istruzioni su schermo.
 
 È possibile utilizzare le seguenti opzioni:
 --menu        Avvia il menu principale.
