@@ -38,14 +38,14 @@ PATH=/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/bin
 ```
 
 Per utilizzare manualmente lo script basta digitare su un terminale:
-
+```sh
 $ current-ip
-
+```
 e seguire le istruzioni su schermo.
 
 È possibile utilizzare le seguenti opzioni:
 ```sh
---menu       Avvia il menu principale.
+--menu        Avvia il menu principale.
 
 --current-1   Reperisce l'indirizzo ip con il 1° metodo, se l'indirizzo è cambiato aggiorna il file contenente il
               relativo indrizzo ed avvia la procedura di invio del suddetto file tramite il metodo impostato nella
