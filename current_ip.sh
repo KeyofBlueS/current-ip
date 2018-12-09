@@ -176,7 +176,7 @@ Indirizzo ip ($NUM) non reperibile, il sito è\e[0m" "\e[1;31mOFFLINE o rete non
 			fi
 	}
 
-help(){
+givemehelp(){
 echo "
 Questo script permette ad un server di reperire il proprio indirizzo ip pubblico (attualmente, per rindondanza, con quattro
 metodi distinti), salvarlo in locale su un file ed eventualmente inviare quest'ultimo all'esterno. Utile principalmente se
@@ -236,7 +236,7 @@ then
    send_ip
 elif [ "$1" = "--help" ]
 then
-   help
+   givemehelp
 else
    menu
 #   current_ip_1
