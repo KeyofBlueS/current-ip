@@ -47,7 +47,7 @@ $ current-ip
 e seguire le istruzioni su schermo.
 
 È possibile utilizzare le seguenti opzioni:
-```sh
+```
 --menu        Avvia il menu principale.
 
 --current-1   Reperisce l'indirizzo ip con il 1° metodo, se l'indirizzo è cambiato aggiorna il file contenente il
