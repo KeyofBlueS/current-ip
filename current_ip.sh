@@ -8,7 +8,7 @@
 ######################################## INIZIO SEZIONE CONFIGURAZIONE #####################################################################
 
 ### Inserire il percorso locale in cui verrà salvato il file (contenente gli indirizzi ip del server) che verrà generato da questo script
-CURRENT_PATH=$HOME/
+CURRENT_PATH="$HOME/"
 
 ### Nella seguente funzione, inserire il metodo più congeniale per l'invio del file contenente gli indirizzi ip del server
 ### Se non si ha intenzione di inviarlo, lasciare soltanto exit 0
@@ -34,6 +34,7 @@ if [ $? = 0 ]; then
 echo
 else
 echo "$CURRENT_FILE non presente nel percorso specificato, procedo a creare la configurazione iniziale"
+mkdir -p $CURRENT_PATH
 echo "export SERVERIP_INTERNET_1=0.0.0.0
 export SERVERIP_INTERNET_2=0.0.0.0
 export SERVERIP_INTERNET_3=0.0.0.0
