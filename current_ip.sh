@@ -308,7 +308,7 @@ e seguire le istruzioni su schermo.
 
 ### NOTA
 Per collegarsi al server ssh, consiglio fortemente (i due script si integrano a vicenda) di
-utilizzare ssh-servers (https://github.com/KeyofBlueS/ssh-servers) sul lato client.
+utilizzare [ssh-servers](https://github.com/KeyofBlueS/ssh-servers) sul lato client.
 "
 exit 0
 }
