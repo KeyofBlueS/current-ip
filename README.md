@@ -10,6 +10,11 @@ Questo script permette ad un server di reperire il proprio indirizzo ip pubblico
 metodi distinti), salvarlo in locale su un file ed eventualmente inviare quest'ultimo all'esterno. Utile principalmente se
 il fornitore della connessione internet del server assegna un indirizzo ip dinamico, di conseguenza un client deve
 conoscere l'attuale indirizzo ip pubblico del server per poter effettuare una connessione (ad esempio ssh).
+Oltre all'indirizzo ip pubblico reperisce anche altre informazioni utili per il collegamento verso il server:
+- Porta in ascolto del server ssh
+- Nome utente del server
+- Nome host del server
+- Indirizzo IP nella rete locale del server
 
 ### INSTALLAZIONE
 ```sh
@@ -30,8 +35,12 @@ possiede alcun metodo di default, lascio all'utente l'inserimento del proprio me
 (ad esempio tramite email, upload su un server ftp, upload su un servizio cloud ecc...)
 
 ### UTILIZZO
-Per rendere il processo automatico consiglio di impostare crontab nel seguente modo, in modo da interrogare ogni servizio a
-distanza di un'ora:
+Per rendere il processo automatico consiglio di impostare crontab come segue, in modo da interrogare ogni servizio a
+distanza di un'ora. Per configurare crontab, digitare su un terminale:
+```sh
+$ crontab -e
+```
+Esempio cronjob:
 ```sh
 PATH=/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/bin
 0 * * * * current-ip --current-1 > /dev/null 2>&1 &
