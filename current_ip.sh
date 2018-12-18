@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version:    1.5.0
+# Version:    1.5.1
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -38,6 +38,7 @@ mkdir -p $CURRENT_PATH
 echo "export SSHPORT=22
 export SERVERUSERNAME=$LOGNAME
 export SERVERHOSTNAME=$HOSTNAME
+export SERVEMAC=
 export SERVERIP_LAN_1=0.0.0.0
 export SERVERIP_INTERNET_1=0.0.0.0
 export SERVERIP_INTERNET_2=0.0.0.0
@@ -48,9 +49,9 @@ chmod +x "$CURRENT"
 fi
 
 # Controllo porta ssh in ascolto
-CURRENTSSHPORT=`cat "/etc/ssh/sshd_config" | grep '^Port ' | grep -E -o '([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])'`
-SSHPORT=`cat "$CURRENT" | grep "export SSHPORT="`
-echo $CURRENTSSHPORT | grep -E -o -q '([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])'
+CURRENTSSHPORT="$(cat "/etc/ssh/sshd_config" | grep '^Port ' | grep -Eo '([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])')"
+SSHPORT="$(cat "$CURRENT" | grep "export SSHPORT=")"
+echo $CURRENTSSHPORT | grep -Eoq '([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])'
 if [ $? = 0 ]; then
 	echo $SSHPORT | grep -q "export SSHPORT=$CURRENTSSHPORT"
 	if [ $? = 0 ]; then
@@ -73,7 +74,7 @@ else
 fi
 
 # Controllo nome utente del server
-SERVERUSERNAME=`cat "$CURRENT" | grep "export SERVERUSERNAME="`
+SERVERUSERNAME="$(cat "$CURRENT" | grep "export SERVERUSERNAME=")"
 cat "$CURRENT" | grep "export SERVERUSERNAME=" | grep -q "$LOGNAME"
 if [ $? = 0 ]; then
 	echo -e "\e[1;34mIl nome utente del server non è cambiato.\e[0m"
@@ -84,7 +85,7 @@ else
 fi
 
 # Controllo nome host del server
-SERVERHOSTNAME=`cat "$CURRENT" | grep "export SERVERHOSTNAME="`
+SERVERHOSTNAME="$(cat "$CURRENT" | grep "export SERVERHOSTNAME=")"
 cat "$CURRENT" | grep "export SERVERHOSTNAME=" | grep -q "$HOSTNAME"
 if [ $? = 0 ]; then
 	echo -e "\e[1;34mIl nome host del server non è cambiato.\e[0m"
@@ -95,9 +96,9 @@ else
 fi
 
 # Controllo indirizzo/i ip lan del server
-CURRENTSERVERIP_LAN_1=`hostname -I | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'`
-SERVERIP_LAN_1=`cat "$CURRENT" | grep "export SERVERIP_LAN_1="`
-echo $CURRENTSERVERIP_LAN_1 | grep -E -o -q '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+CURRENTSERVERIP_LAN_1="$(hostname -I | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')"
+SERVERIP_LAN_1="$(cat "$CURRENT" | grep "export SERVERIP_LAN_1=")"
+echo $CURRENTSERVERIP_LAN_1 | grep -Eoq '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 if [ $? = 0 ]; then
 	echo $SERVERIP_LAN_1 | grep -q "export SERVERIP_LAN_1=$CURRENTSERVERIP_LAN_1"
 	if [ $? = 0 ]; then
@@ -206,9 +207,9 @@ for pid in $(pgrep -f "current-ip --current-$NUM"); do
         kill -9 $pid
     fi 
 done
-CURRENTTMPIP=`"${cmdArgs[@]}" | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'`
-CURRENT_IP=`cat "$CURRENT" | grep "export SERVERIP_INTERNET_$NUM="`
-echo -e "\e[1;34m## Il tuo indirizzo ip ($NUM) è: ##\e[0m" && echo "$CURRENTTMPIP" | grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+CURRENTTMPIP="$("${cmdArgs[@]}" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')"
+CURRENT_IP="$(cat "$CURRENT" | grep "export SERVERIP_INTERNET_$NUM=")"
+echo -e "\e[1;34m## Il tuo indirizzo ip ($NUM) è: ##\e[0m" && echo "$CURRENTTMPIP" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 if [ $? = 0 ]; then
 		cat "$CURRENT" | grep -xqFe "export SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"
 		if [ $? = 0 ]; then
@@ -238,7 +239,7 @@ givemehelp(){
 echo "
 # current-ip
 
-# Version:    1.5.0
+# Version:    1.5.1
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -249,10 +250,10 @@ metodi distinti), salvarlo in locale su un file ed eventualmente inviare quest'u
 il fornitore della connessione internet del server assegna un indirizzo ip dinamico, di conseguenza un client deve
 conoscere l'attuale indirizzo ip pubblico del server per poter effettuare una connessione (ad esempio ssh).
 Oltre all'indirizzo ip pubblico reperisce anche altre informazioni utili per il collegamento verso il server:
-Porta in ascolto del server ssh
-Nome utente del server
-Nome host del server
-Indirizzo IP nella rete locale del server
+- Porta in ascolto del server ssh
+- Nome utente del server
+- Nome host del server
+- Indirizzo IP nella rete locale del server
 
 ### CONFIGURAZIONE
 Nella SEZIONE CONFIGURAZIONE dello script è possibile impostare il percorso locale in cui verrà salvato il file (contenente
@@ -306,7 +307,7 @@ e seguire le istruzioni su schermo.
 
 --help        Visualizza una descrizione ed opzioni di current-ip
 
-### NOTA
+### Nota
 Per collegarsi al server ssh, consiglio fortemente (i due script si integrano a vicenda) di
 utilizzare [ssh-servers](https://github.com/KeyofBlueS/ssh-servers) sul lato client.
 "
