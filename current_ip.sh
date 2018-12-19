@@ -95,6 +95,19 @@ else
 	mv $HOME/.currenthost "$CURRENT"
 fi
 
+# Controllo indirizzo/i mac del server
+#CURRENTSERVEMAC="$(cat /sys/class/net/*/address)"
+#
+#SERVEMAC="$(cat $CURRENT | grep "export SERVEMAC=")"
+#cat $CURRENT | grep "export SERVERMAC=" | grep -q "CURRENTSERVEMAC"
+#if [ $? = 0 ]; then
+#	echo -e "\e[1;31mL'indirizzo mac del server non è cambiato...\e[0m"
+#else
+#	echo -e "\e[1;31mIndirizzo mac del server aggiornato\e[0m"
+#	sed s/"$SERVERMAC"/"export SERVERMAC=$CURRENTSERVEMAC"/ < "$CURRENT" > $HOME/.currentmac
+#	mv $HOME/.currentmac "$CURRENT"
+#fi
+
 # Controllo indirizzo/i ip lan del server
 CURRENTSERVERIP_LAN_1="$(hostname -I | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')"
 SERVERIP_LAN_1="$(cat "$CURRENT" | grep "export SERVERIP_LAN_1=")"
@@ -111,7 +124,8 @@ if [ $? = 0 ]; then
 else
 	echo -e "\e[1;31m	L'indirizzo ip locale non è reperibile, lascio il precedente\e[0m"
 fi
-echo -e "\e[1;34m## Indirizzi IP correnti: ##\e[0m"
+echo -e "\e[1;34m
+## Informazioni server attuali:\e[0m"
 cat "$CURRENT"
 
 # Configurazioni per il reperimento dell'indirizzo ip pubblico
@@ -147,8 +161,7 @@ declare -a cmdArgs='([0]="dig" [1]="TXT" [2]="+short" [3]="o-o.myaddr.l.google.c
 check_ip
 }
 
-menu(){
-echo -e "\e[1;34m
+menu(){echo -e "\e[1;34m
 ## Current ip\e[0m"
 echo -e "\e[1;31m
 Quale indirizzo ip vuoi aggiornare?
@@ -209,19 +222,24 @@ for pid in $(pgrep -f "current-ip --current-$NUM"); do
 done
 CURRENTTMPIP="$("${cmdArgs[@]}" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')"
 CURRENT_IP="$(cat "$CURRENT" | grep "export SERVERIP_INTERNET_$NUM=")"
-echo -e "\e[1;34m## Il tuo indirizzo ip ($NUM) è: ##\e[0m" && echo "$CURRENTTMPIP" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
+echo -e "\e[1;34m## Il tuo indirizzo ip ($NUM) è:\e[0m" && echo "$CURRENTTMPIP" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 if [ $? = 0 ]; then
 		cat "$CURRENT" | grep -xqFe "export SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"
 		if [ $? = 0 ]; then
-				echo -e "\e[1;34m## Indirizzi IP correnti: ##\e[0m"
+				echo -e "\e[1;34m
+## Informazioni server attuali:\e[0m"
 				cat "$CURRENT"
-				echo -e "\e[1;34mL'indirizzo ip ($NUM) non è cambiato, esco...\e[0m"
+				echo -e "\e[1;34mL'indirizzo ip ($NUM) non è cambiato, esco...
+				\e[0m"
 				exit 0
 		else
-				echo -e "\e[1;31mIndirizzo ip ($NUM) aggiornato:" "\e[1;34m "$CURRENTTMPIP"\e[0m"
 				sed s/"$CURRENT_IP"/"export SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"/ < "$CURRENT" > $HOME/.current
 				mv $HOME/.current "$CURRENT"
+				echo -e "\e[1;34m
+## Informazioni server attuali:\e[0m"
 				cat "$CURRENT"
+				echo -e "\e[1;31mIndirizzo ip ($NUM) aggiornato:" "\e[1;34m "$CURRENTTMPIP"
+				\e[0m"
 				send_ip
 		fi
 else
@@ -337,8 +355,4 @@ then
    givemehelp
 else
    menu
-#  config_1
-#  config_2
-#  config_3
-#  config_4
 fi
