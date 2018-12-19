@@ -95,19 +95,6 @@ else
 	mv $HOME/.currenthost "$CURRENT"
 fi
 
-# Controllo indirizzo/i mac del server
-#CURRENTSERVEMAC="$(cat /sys/class/net/*/address)"
-#
-#SERVEMAC="$(cat $CURRENT | grep "export SERVEMAC=")"
-#cat $CURRENT | grep "export SERVERMAC=" | grep -q "CURRENTSERVEMAC"
-#if [ $? = 0 ]; then
-#	echo -e "\e[1;31mL'indirizzo mac del server non è cambiato...\e[0m"
-#else
-#	echo -e "\e[1;31mIndirizzo mac del server aggiornato\e[0m"
-#	sed s/"$SERVERMAC"/"export SERVERMAC=$CURRENTSERVEMAC"/ < "$CURRENT" > $HOME/.currentmac
-#	mv $HOME/.currentmac "$CURRENT"
-#fi
-
 # Controllo indirizzo/i ip lan del server
 CURRENTSERVERIP_LAN_1="$(hostname -I | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')"
 SERVERIP_LAN_1="$(cat "$CURRENT" | grep "export SERVERIP_LAN_1=")"
