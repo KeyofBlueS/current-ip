@@ -148,7 +148,8 @@ declare -a cmdArgs='([0]="dig" [1]="TXT" [2]="+short" [3]="o-o.myaddr.l.google.c
 check_ip
 }
 
-menu(){echo -e "\e[1;34m
+menu(){
+echo -e "\e[1;34m
 ## Current ip\e[0m"
 echo -e "\e[1;31m
 Quale indirizzo ip vuoi aggiornare?
