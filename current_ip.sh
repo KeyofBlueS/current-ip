@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version:    1.5.1
+# Version:    1.5.3
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -38,7 +38,7 @@ mkdir -p $CURRENT_PATH
 echo "export SSHPORT=22
 export SERVERUSERNAME=$LOGNAME
 export SERVERHOSTNAME=$HOSTNAME
-export SERVEMAC=
+export SERVERMAC=
 export SERVERIP_LAN_1=0.0.0.0
 export SERVERIP_INTERNET_1=0.0.0.0
 export SERVERIP_INTERNET_2=0.0.0.0
@@ -95,12 +95,25 @@ else
 	mv $HOME/.currenthost "$CURRENT"
 fi
 
+# Controllo indirizzo/i mac del server
+CURRENTSERVERMACLIST="$(cat /sys/class/net/*/address | grep -v "00:00:00:00:00:00" | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')"
+CURRENTSERVERMAC="$(echo $CURRENTSERVERMACLIST )"
+SERVERMAC="$(cat $CURRENT | grep "export SERVERMAC=")"
+cat $CURRENT | grep "export SERVERMAC=" | grep -q "$CURRENTSERVERMAC"
+if [ $? = 0 ]; then
+	echo -e "\e[1;34mL'indirizzo mac del server non è cambiato...\e[0m"
+else
+	echo -e "\e[1;31mIndirizzo mac del server aggiornato" "\e[1;34m "$CURRENTSERVERMAC"\e[0m"
+	sed s/"$SERVERMAC"/"export SERVERMAC=$CURRENTSERVERMAC"/ < "$CURRENT" > $HOME/.currentmac
+	mv $HOME/.currentmac "$CURRENT"
+fi
+
 # Controllo indirizzo/i ip lan del server
-CURRENTSERVERIP_LAN_1="$(hostname -I | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')"
+CURRENTSERVERIP_LAN_1="$(hostname -I)"
 SERVERIP_LAN_1="$(cat "$CURRENT" | grep "export SERVERIP_LAN_1=")"
 echo $CURRENTSERVERIP_LAN_1 | grep -Eoq '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 if [ $? = 0 ]; then
-	echo $SERVERIP_LAN_1 | grep -q "export SERVERIP_LAN_1=$CURRENTSERVERIP_LAN_1"
+	cat $CURRENT | grep "export SERVERIP_LAN_1=" | grep -q "$CURRENTSERVERIP_LAN_1"
 	if [ $? = 0 ]; then
 		echo -e "\e[1;34mL'indirizzo ip locale non è cambiato.\e[0m"
 	else
@@ -245,7 +258,7 @@ givemehelp(){
 echo "
 # current-ip
 
-# Version:    1.5.1
+# Version:    1.5.3
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
