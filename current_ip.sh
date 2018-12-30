@@ -276,7 +276,7 @@ Oltre all'indirizzo ip pubblico reperisce anche altre informazioni utili per il 
 
 ### CONFIGURAZIONE
 Nella SEZIONE CONFIGURAZIONE dello script è possibile impostare il percorso locale in cui verrà salvato il file (contenente
-gli indirizzi ip del server) che verrà generato da questo script (di default è $HOME/).
+gli indirizzi ip del server) che verrà generato da questo script (di default è $HOME).
 Ma più importante è inserire un metodo valido per l'upload del file contenente gli indirizzi ip del server. current-ip non
 possiede alcun metodo di default, lascio all'utente l'inserimento del proprio metodo più congeniale per l'invio del file
 (ad esempio tramite email, upload su un server ftp, upload su un servizio cloud ecc...)
