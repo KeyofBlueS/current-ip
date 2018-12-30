@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version:    1.5.3
+# Version:    1.5.4
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -8,8 +8,8 @@
 ######################################## INIZIO SEZIONE CONFIGURAZIONE #####################################################################
 
 ### Inserire il percorso locale in cui verrà salvato il file (contenente gli indirizzi ip del server) che verrà generato da questo script
-# (default "$HOME/")
-CURRENT_PATH="$HOME/"
+# (default "$HOME")
+CURRENT_PATH=$HOME
 
 ### Nella seguente funzione, inserire il metodo più congeniale per l'invio del file contenente gli indirizzi ip del server
 ### Se non si ha intenzione di inviarlo, lasciare soltanto exit 0
@@ -28,13 +28,13 @@ done
 [[ $deps -ne 1 ]] && echo "" || { echo -en "\nInstalla le dipendenze necessarie e riavvia questo script\n";exit 1; }
 
 CURRENT_FILE="$LOGNAME"@"$HOSTNAME"_current.txt
-CURRENT="$CURRENT_PATH$CURRENT_FILE"
+CURRENT="$CURRENT_PATH/$CURRENT_FILE"
 cat "$CURRENT" | grep -q "export "
 if [ $? = 0 ]; then
 echo
 else
 echo "$CURRENT_FILE non presente nel percorso specificato, procedo a creare la configurazione iniziale"
-mkdir -p $CURRENT_PATH
+mkdir -p "$CURRENT_PATH"
 echo "export SSHPORT=22
 export SERVERUSERNAME=$LOGNAME
 export SERVERHOSTNAME=$HOSTNAME
@@ -258,7 +258,7 @@ givemehelp(){
 echo "
 # current-ip
 
-# Version:    1.5.3
+# Version:    1.5.4
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
