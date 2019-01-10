@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version:    1.5.4
+# Version:    1.5.5
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -29,96 +29,96 @@ done
 
 CURRENT_FILE="$LOGNAME"@"$HOSTNAME"_current.txt
 CURRENT="$CURRENT_PATH/$CURRENT_FILE"
-cat "$CURRENT" | grep -q "export "
+cat "$CURRENT" | grep -q "SERVERIP_INTERNET_"
 if [ $? = 0 ]; then
 echo
 else
 echo "$CURRENT_FILE non presente nel percorso specificato, procedo a creare la configurazione iniziale"
 mkdir -p "$CURRENT_PATH"
-echo "export SSHPORT=22
-export SERVERUSERNAME=$LOGNAME
-export SERVERHOSTNAME=$HOSTNAME
-export SERVERMAC=
-export SERVERIP_LAN_1=0.0.0.0
-export SERVERIP_INTERNET_1=0.0.0.0
-export SERVERIP_INTERNET_2=0.0.0.0
-export SERVERIP_INTERNET_3=0.0.0.0
-export SERVERIP_INTERNET_4=0.0.0.0
+echo "SSHPORT=22
+SERVERUSERNAME=$LOGNAME
+SERVERHOSTNAME=$HOSTNAME
+SERVERMAC=
+SERVERIP_LAN_1=0.0.0.0
+SERVERIP_INTERNET_1=0.0.0.0
+SERVERIP_INTERNET_2=0.0.0.0
+SERVERIP_INTERNET_3=0.0.0.0
+SERVERIP_INTERNET_4=0.0.0.0
 " > "$CURRENT"
 chmod +x "$CURRENT"
 fi
 
 # Controllo porta ssh in ascolto
 CURRENTSSHPORT="$(cat "/etc/ssh/sshd_config" | grep '^Port ' | grep -Eo '([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])')"
-SSHPORT="$(cat "$CURRENT" | grep "export SSHPORT=")"
+SSHPORT="$(cat "$CURRENT" | grep "SSHPORT=")"
 echo $CURRENTSSHPORT | grep -Eoq '([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])'
 if [ $? = 0 ]; then
-	echo $SSHPORT | grep -q "export SSHPORT=$CURRENTSSHPORT"
+	echo $SSHPORT | grep -q "SSHPORT=$CURRENTSSHPORT"
 	if [ $? = 0 ]; then
 		echo -e "\e[1;34mLa porta ssh in ascolto non è cambiata.\e[0m"
 	else
 		echo -e "\e[1;31mPorta ssh in ascolto aggiornata:" "\e[1;34m "$CURRENTSSHPORT"\e[0m"
-		sed s/"$SSHPORT"/"export SSHPORT=$CURRENTSSHPORT"/ < "$CURRENT" > $HOME/.currentsshport
+		sed s/"$SSHPORT"/"SSHPORT=$CURRENTSSHPORT"/ < "$CURRENT" > $HOME/.currentsshport
 		mv $HOME/.currentsshport "$CURRENT"
 	fi
 else
 	echo -e "\e[1;31m	Porta ssh in ascolto non reperibile\e[0m"
-	echo $SSHPORT | grep -q "export SSHPORT=22"
+	echo $SSHPORT | grep -q "SSHPORT=22"
 	if [ $? = 0 ]; then
 		echo -e "\e[1;34mLa porta ssh in ascolto non è cambiata.\e[0m"
 	else
 		echo -e "\e[1;31mPorta ssh in ascolto aggiornata:" "\e[1;34m "22 "(default)""\e[0m"
-		sed s/"$SSHPORT"/"export SSHPORT=22"/ < "$CURRENT" > $HOME/.currentsshport
+		sed s/"$SSHPORT"/"SSHPORT=22"/ < "$CURRENT" > $HOME/.currentsshport
 		mv $HOME/.currentsshport "$CURRENT"
 	fi
 fi
 
 # Controllo nome utente del server
-SERVERUSERNAME="$(cat "$CURRENT" | grep "export SERVERUSERNAME=")"
-cat "$CURRENT" | grep "export SERVERUSERNAME=" | grep -q "$LOGNAME"
+SERVERUSERNAME="$(cat "$CURRENT" | grep "SERVERUSERNAME=")"
+cat "$CURRENT" | grep "SERVERUSERNAME=" | grep -q "$LOGNAME"
 if [ $? = 0 ]; then
 	echo -e "\e[1;34mIl nome utente del server non è cambiato.\e[0m"
 else
 	echo -e "\e[1;31mNome utente del server aggiornato:" "\e[1;34m "$LOGNAME"\e[0m"
-	sed s/"$SERVERUSERNAME"/"export SERVERUSERNAME=$LOGNAME"/ < "$CURRENT" > $HOME/.currentuser
+	sed s/"$SERVERUSERNAME"/"SERVERUSERNAME=$LOGNAME"/ < "$CURRENT" > $HOME/.currentuser
 	mv $HOME/.currentuser "$CURRENT"
 fi
 
 # Controllo nome host del server
-SERVERHOSTNAME="$(cat "$CURRENT" | grep "export SERVERHOSTNAME=")"
-cat "$CURRENT" | grep "export SERVERHOSTNAME=" | grep -q "$HOSTNAME"
+SERVERHOSTNAME="$(cat "$CURRENT" | grep "SERVERHOSTNAME=")"
+cat "$CURRENT" | grep "SERVERHOSTNAME=" | grep -q "$HOSTNAME"
 if [ $? = 0 ]; then
 	echo -e "\e[1;34mIl nome host del server non è cambiato.\e[0m"
 else
 	echo -e "\e[1;31mNome host del server aggiornato" "\e[1;34m "$HOSTNAME"\e[0m"
-	sed s/"$SERVERHOSTNAME"/"export SERVERHOSTNAME=$HOSTNAME"/ < "$CURRENT" > $HOME/.currenthost
+	sed s/"$SERVERHOSTNAME"/"SERVERHOSTNAME=$HOSTNAME"/ < "$CURRENT" > $HOME/.currenthost
 	mv $HOME/.currenthost "$CURRENT"
 fi
 
 # Controllo indirizzo/i mac del server
 CURRENTSERVERMACLIST="$(cat /sys/class/net/*/address | grep -v "00:00:00:00:00:00" | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')"
 CURRENTSERVERMAC="$(echo $CURRENTSERVERMACLIST )"
-SERVERMAC="$(cat $CURRENT | grep "export SERVERMAC=")"
-cat $CURRENT | grep "export SERVERMAC=" | grep -q "$CURRENTSERVERMAC"
+SERVERMAC="$(cat $CURRENT | grep "SERVERMAC=")"
+cat $CURRENT | grep "SERVERMAC=" | grep -q "$CURRENTSERVERMAC"
 if [ $? = 0 ]; then
 	echo -e "\e[1;34mL'indirizzo mac del server non è cambiato...\e[0m"
 else
 	echo -e "\e[1;31mIndirizzo mac del server aggiornato" "\e[1;34m "$CURRENTSERVERMAC"\e[0m"
-	sed s/"$SERVERMAC"/"export SERVERMAC=$CURRENTSERVERMAC"/ < "$CURRENT" > $HOME/.currentmac
+	sed s/"$SERVERMAC"/"SERVERMAC=$CURRENTSERVERMAC"/ < "$CURRENT" > $HOME/.currentmac
 	mv $HOME/.currentmac "$CURRENT"
 fi
 
 # Controllo indirizzo/i ip lan del server
 CURRENTSERVERIP_LAN_1="$(hostname -I)"
-SERVERIP_LAN_1="$(cat "$CURRENT" | grep "export SERVERIP_LAN_1=")"
+SERVERIP_LAN_1="$(cat "$CURRENT" | grep "SERVERIP_LAN_1=")"
 echo $CURRENTSERVERIP_LAN_1 | grep -Eoq '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 if [ $? = 0 ]; then
-	cat $CURRENT | grep "export SERVERIP_LAN_1=" | grep -q "$CURRENTSERVERIP_LAN_1"
+	cat $CURRENT | grep "SERVERIP_LAN_1=" | grep -q "$CURRENTSERVERIP_LAN_1"
 	if [ $? = 0 ]; then
 		echo -e "\e[1;34mL'indirizzo ip locale non è cambiato.\e[0m"
 	else
 		echo -e "\e[1;31mIndirizzo ip locale aggiornato:" "\e[1;34m "$CURRENTSERVERIP_LAN_1"\e[0m"
-		sed s/"$SERVERIP_LAN_1"/"export SERVERIP_LAN_1=$CURRENTSERVERIP_LAN_1"/ < "$CURRENT" > $HOME/.currentlocalip
+		sed s/"$SERVERIP_LAN_1"/"SERVERIP_LAN_1=$CURRENTSERVERIP_LAN_1"/ < "$CURRENT" > $HOME/.currentlocalip
 		mv $HOME/.currentlocalip "$CURRENT"
 	fi
 else
@@ -222,10 +222,10 @@ for pid in $(pgrep -f "current-ip --current-$NUM"); do
     fi 
 done
 CURRENTTMPIP="$("${cmdArgs[@]}" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')"
-CURRENT_IP="$(cat "$CURRENT" | grep "export SERVERIP_INTERNET_$NUM=")"
+CURRENT_IP="$(cat "$CURRENT" | grep "SERVERIP_INTERNET_$NUM=")"
 echo -e "\e[1;34m## Il tuo indirizzo ip ($NUM) è:\e[0m" && echo "$CURRENTTMPIP" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
 if [ $? = 0 ]; then
-		cat "$CURRENT" | grep -xqFe "export SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"
+		cat "$CURRENT" | grep -xqFe "SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"
 		if [ $? = 0 ]; then
 				echo -e "\e[1;34m
 ## Informazioni server attuali:\e[0m"
@@ -234,7 +234,7 @@ if [ $? = 0 ]; then
 				\e[0m"
 				exit 0
 		else
-				sed s/"$CURRENT_IP"/"export SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"/ < "$CURRENT" > $HOME/.current
+				sed s/"$CURRENT_IP"/"SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"/ < "$CURRENT" > $HOME/.current
 				mv $HOME/.current "$CURRENT"
 				echo -e "\e[1;34m
 ## Informazioni server attuali:\e[0m"
@@ -258,7 +258,7 @@ givemehelp(){
 echo "
 # current-ip
 
-# Version:    1.5.4
+# Version:    1.5.5
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -276,7 +276,7 @@ Oltre all'indirizzo ip pubblico reperisce anche altre informazioni utili per il 
 
 ### CONFIGURAZIONE
 Nella SEZIONE CONFIGURAZIONE dello script è possibile impostare il percorso locale in cui verrà salvato il file (contenente
-gli indirizzi ip del server) che verrà generato da questo script (di default è $HOME).
+gli indirizzi ip del server) che verrà generato da questo script (di default è $HOME/).
 Ma più importante è inserire un metodo valido per l'upload del file contenente gli indirizzi ip del server. current-ip non
 possiede alcun metodo di default, lascio all'utente l'inserimento del proprio metodo più congeniale per l'invio del file
 (ad esempio tramite email, upload su un server ftp, upload su un servizio cloud ecc...)
