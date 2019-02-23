@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version:    1.5.5
+# Version:    1.5.8
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -29,13 +29,12 @@ done
 
 CURRENT_FILE="$LOGNAME"@"$HOSTNAME"_current.txt
 CURRENT="$CURRENT_PATH/$CURRENT_FILE"
-cat "$CURRENT" | grep -q "SERVERIP_INTERNET_"
-if [ $? = 0 ]; then
-echo
+if cat "$CURRENT" | grep -q "SERVERIP_INTERNET_"; then
+	echo
 else
-echo "$CURRENT_FILE non presente nel percorso specificato, procedo a creare la configurazione iniziale"
-mkdir -p "$CURRENT_PATH"
-echo "SSHPORT=22
+	echo "$CURRENT_FILE non presente nel percorso specificato, procedo a creare la configurazione iniziale"
+	mkdir -p "$CURRENT_PATH"
+	echo "SSHPORT=22
 SERVERUSERNAME=$LOGNAME
 SERVERHOSTNAME=$HOSTNAME
 SERVERMAC=
@@ -45,16 +44,14 @@ SERVERIP_INTERNET_2=0.0.0.0
 SERVERIP_INTERNET_3=0.0.0.0
 SERVERIP_INTERNET_4=0.0.0.0
 " > "$CURRENT"
-chmod +x "$CURRENT"
+	chmod +x "$CURRENT"
 fi
 
 # Controllo porta ssh in ascolto
 CURRENTSSHPORT="$(cat "/etc/ssh/sshd_config" | grep '^Port ' | grep -Eo '([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])')"
 SSHPORT="$(cat "$CURRENT" | grep "SSHPORT=")"
-echo $CURRENTSSHPORT | grep -Eoq '([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])'
-if [ $? = 0 ]; then
-	echo $SSHPORT | grep -q "SSHPORT=$CURRENTSSHPORT"
-	if [ $? = 0 ]; then
+if echo $CURRENTSSHPORT | grep -Eoq '([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])'; then
+	if echo $SSHPORT | grep -q "SSHPORT=$CURRENTSSHPORT"; then
 		echo -e "\e[1;34mLa porta ssh in ascolto non è cambiata.\e[0m"
 	else
 		echo -e "\e[1;31mPorta ssh in ascolto aggiornata:" "\e[1;34m "$CURRENTSSHPORT"\e[0m"
@@ -62,7 +59,7 @@ if [ $? = 0 ]; then
 		mv $HOME/.currentsshport "$CURRENT"
 	fi
 else
-	echo -e "\e[1;31m	Porta ssh in ascolto non reperibile\e[0m"
+	echo -e "\e[1;31mPorta ssh in ascolto non reperibile\e[0m"
 	echo $SSHPORT | grep -q "SSHPORT=22"
 	if [ $? = 0 ]; then
 		echo -e "\e[1;34mLa porta ssh in ascolto non è cambiata.\e[0m"
@@ -75,8 +72,7 @@ fi
 
 # Controllo nome utente del server
 SERVERUSERNAME="$(cat "$CURRENT" | grep "SERVERUSERNAME=")"
-cat "$CURRENT" | grep "SERVERUSERNAME=" | grep -q "$LOGNAME"
-if [ $? = 0 ]; then
+if cat "$CURRENT" | grep "SERVERUSERNAME=" | grep -q "$LOGNAME"; then
 	echo -e "\e[1;34mIl nome utente del server non è cambiato.\e[0m"
 else
 	echo -e "\e[1;31mNome utente del server aggiornato:" "\e[1;34m "$LOGNAME"\e[0m"
@@ -86,8 +82,7 @@ fi
 
 # Controllo nome host del server
 SERVERHOSTNAME="$(cat "$CURRENT" | grep "SERVERHOSTNAME=")"
-cat "$CURRENT" | grep "SERVERHOSTNAME=" | grep -q "$HOSTNAME"
-if [ $? = 0 ]; then
+if cat "$CURRENT" | grep "SERVERHOSTNAME=" | grep -q "$HOSTNAME"; then
 	echo -e "\e[1;34mIl nome host del server non è cambiato.\e[0m"
 else
 	echo -e "\e[1;31mNome host del server aggiornato" "\e[1;34m "$HOSTNAME"\e[0m"
@@ -99,9 +94,8 @@ fi
 CURRENTSERVERMACLIST="$(cat /sys/class/net/*/address | grep -v "00:00:00:00:00:00" | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')"
 CURRENTSERVERMAC="$(echo $CURRENTSERVERMACLIST )"
 SERVERMAC="$(cat $CURRENT | grep "SERVERMAC=")"
-cat $CURRENT | grep "SERVERMAC=" | grep -q "$CURRENTSERVERMAC"
-if [ $? = 0 ]; then
-	echo -e "\e[1;34mL'indirizzo mac del server non è cambiato...\e[0m"
+if cat $CURRENT | grep "SERVERMAC=" | grep -q "$CURRENTSERVERMAC"; then
+	echo -e "\e[1;34mL'indirizzo mac del server non è cambiato.\e[0m"
 else
 	echo -e "\e[1;31mIndirizzo mac del server aggiornato" "\e[1;34m "$CURRENTSERVERMAC"\e[0m"
 	sed s/"$SERVERMAC"/"SERVERMAC=$CURRENTSERVERMAC"/ < "$CURRENT" > $HOME/.currentmac
@@ -111,10 +105,8 @@ fi
 # Controllo indirizzo/i ip lan del server
 CURRENTSERVERIP_LAN_1="$(hostname -I)"
 SERVERIP_LAN_1="$(cat "$CURRENT" | grep "SERVERIP_LAN_1=")"
-echo $CURRENTSERVERIP_LAN_1 | grep -Eoq '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-if [ $? = 0 ]; then
-	cat $CURRENT | grep "SERVERIP_LAN_1=" | grep -q "$CURRENTSERVERIP_LAN_1"
-	if [ $? = 0 ]; then
+if echo $CURRENTSERVERIP_LAN_1 | grep -Eoq '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'; then
+	if cat $CURRENT | grep "SERVERIP_LAN_1=" | grep -q "$CURRENTSERVERIP_LAN_1"; then
 		echo -e "\e[1;34mL'indirizzo ip locale non è cambiato.\e[0m"
 	else
 		echo -e "\e[1;31mIndirizzo ip locale aggiornato:" "\e[1;34m "$CURRENTSERVERIP_LAN_1"\e[0m"
@@ -122,7 +114,7 @@ if [ $? = 0 ]; then
 		mv $HOME/.currentlocalip "$CURRENT"
 	fi
 else
-	echo -e "\e[1;31m	L'indirizzo ip locale non è reperibile, lascio il precedente\e[0m"
+	echo -e "\e[1;31mL'indirizzo ip locale non è reperibile, lascio il precedente\e[0m"
 fi
 echo -e "\e[1;34m
 ## Informazioni server attuali:\e[0m"
@@ -163,8 +155,8 @@ check_ip
 
 menu(){
 echo -e "\e[1;34m
-## Current ip\e[0m"
-echo -e "\e[1;31m
+## Current ip
+\e[1;35m
 Quale indirizzo ip vuoi aggiornare?
 (1) ifconfig.me - current ip 1
 (2) ipecho.net - current ip 2
@@ -223,33 +215,31 @@ for pid in $(pgrep -f "current-ip --current-$NUM"); do
 done
 CURRENTTMPIP="$("${cmdArgs[@]}" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)')"
 CURRENT_IP="$(cat "$CURRENT" | grep "SERVERIP_INTERNET_$NUM=")"
-echo -e "\e[1;34m## Il tuo indirizzo ip ($NUM) è:\e[0m" && echo "$CURRENTTMPIP" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'
-if [ $? = 0 ]; then
-		cat "$CURRENT" | grep -xqFe "SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"
-		if [ $? = 0 ]; then
-				echo -e "\e[1;34m
+if echo -e "\e[1;34m## Il tuo indirizzo ip ($NUM) è:\e[0m" && echo "$CURRENTTMPIP" | grep -Eo '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)'; then
+	if cat "$CURRENT" | grep -xqFe "SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"; then
+		echo -e "\e[1;34m
 ## Informazioni server attuali:\e[0m"
-				cat "$CURRENT"
-				echo -e "\e[1;34mL'indirizzo ip ($NUM) non è cambiato, esco...
-				\e[0m"
-				exit 0
-		else
-				sed s/"$CURRENT_IP"/"SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"/ < "$CURRENT" > $HOME/.current
-				mv $HOME/.current "$CURRENT"
-				echo -e "\e[1;34m
+		cat "$CURRENT"
+		echo -e "\e[1;34mL'indirizzo ip ($NUM) non è cambiato, esco...
+\e[0m"
+		exit 0
+	else
+		sed s/"$CURRENT_IP"/"SERVERIP_INTERNET_$NUM=$CURRENTTMPIP"/ < "$CURRENT" > $HOME/.current
+		mv $HOME/.current "$CURRENT"
+		echo -e "\e[1;34m
 ## Informazioni server attuali:\e[0m"
-				cat "$CURRENT"
-				echo -e "\e[1;31mIndirizzo ip ($NUM) aggiornato:" "\e[1;34m "$CURRENTTMPIP"
-				\e[0m"
-				send_ip
-		fi
+		cat "$CURRENT"
+		echo -e "\e[1;31mIndirizzo ip ($NUM) aggiornato:" "\e[1;34m "$CURRENTTMPIP"
+\e[0m"
+		send_ip
+	fi
 else
-		echo -e "\e[1;31m
+	echo -e "\e[1;31m
 Indirizzo ip ($NUM) non reperibile, il sito è\e[0m" "\e[1;31mOFFLINE o rete non raggiungibile\e[0m"
-		echo -e "\e[1;31mPremi INVIO per uscire, o attendi 10 minuti per riprovare automaticamente\e[0m"
-		if read -t 600 _e; then
-				exit 0
-		fi
+	echo -e "\e[1;31mPremi INVIO per uscire, o attendi 10 minuti per riprovare automaticamente\e[0m"
+	if read -t 600 _e; then
+		exit 0
+	fi
 config_$NUM
 fi
 }
@@ -258,7 +248,7 @@ givemehelp(){
 echo "
 # current-ip
 
-# Version:    1.5.5
+# Version:    1.5.8
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -333,27 +323,20 @@ utilizzare [ssh-servers](https://github.com/KeyofBlueS/ssh-servers) sul lato cli
 exit 0
 }
 
-if [ "$1" = "--menu" ]
-then
-   menu
-elif [ "$1" = "--current-1" ]
-then
-   config_1
-elif [ "$1" = "--current-2" ]
-then
-   config_2
-elif [ "$1" = "--current-3" ]
-then
-   config_3
-elif [ "$1" = "--current-4" ]
-then
-   config_4
-elif [ "$1" = "--send-ip" ]
-then
-   send_ip
-elif [ "$1" = "--help" ]
-then
-   givemehelp
+if [ "$1" = "--menu" ]; then
+	menu
+elif [ "$1" = "--current-1" ]; then
+	config_1
+elif [ "$1" = "--current-2" ]; then
+	config_2
+elif [ "$1" = "--current-3" ]; then
+	config_3
+elif [ "$1" = "--current-4" ]; then
+	config_4
+elif [ "$1" = "--send-ip" ]; then
+	send_ip
+elif [ "$1" = "--help" ]; then
+	givemehelp
 else
-   menu
+	menu
 fi
