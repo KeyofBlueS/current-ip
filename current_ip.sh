@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version:    1.5.12
+# Version:    1.5.14
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
