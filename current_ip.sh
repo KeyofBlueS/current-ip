@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version:    1.5.10
+# Version:    1.5.12
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -21,13 +21,21 @@ exit 0
 
 ######################################### FINE SEZIONE CONFIGURAZIONE ######################################################################
 
+# set to "true" to enable autoupdate of this script
+UPDATE=true
+
+if echo $UPDATE | grep -Eq '^(true|True|TRUE|si|NO|no)$'; then
+echo -e "\e[1;34mControllo aggiornamenti per questo script...\e[0m"
 if curl -s github.com > /dev/null; then
 	SCRIPT_LINK="https://raw.githubusercontent.com/KeyofBlueS/current-ip/master/current_ip.sh"
 	UPSTREAM_VERSION="$(timeout -s SIGTERM 15 curl -L "$SCRIPT_LINK" 2> /dev/null | grep "# Version:" | head -n 1)"
 	LOCAL_VERSION="$(cat "${0}" | grep "# Version:" | head -n 1)"
 	REPOSITORY_LINK="$(cat "${0}" | grep "# Repository:" | head -n 1)"
 	if echo "$LOCAL_VERSION" | grep -q "$UPSTREAM_VERSION"; then
-		echo -n
+		echo -e "\e[1;32m
+## Questo script risulta aggiornato alla versione upstream
+\e[0m
+"
 	else
 		echo -e "\e[1;33m-----------------------------------------------------------------------------------	
 ## ATTENZIONE: questo script non risulta aggiornato alla versione upstream, visita:
@@ -59,16 +67,38 @@ if curl -s github.com > /dev/null; then
 				scriptname="${scriptpath##*/}"
 			fi
 			if timeout -s SIGTERM 15 curl -s -o /tmp/"${scriptname}" "$SCRIPT_LINK"; then
-				sudo mv /tmp/flash_update.sh "${scriptfolder}"
-				sudo chown root:root "${scriptfolder}${scriptname}" > /dev/null 2>&1
-				sudo chmod 755 "${scriptfolder}${scriptname}" > /dev/null 2>&1
-				sudo chmod +x "${scriptfolder}${scriptname}" > /dev/null 2>&1
+				if [[ -w "${scriptfolder}${scriptname}" ]] && [[ -w "${scriptfolder}" ]]; then
+					mv /tmp/"${scriptname}" "${scriptfolder}"
+					chown root:root "${scriptfolder}${scriptname}" > /dev/null 2>&1
+					chmod 755 "${scriptfolder}${scriptname}" > /dev/null 2>&1
+					chmod +x "${scriptfolder}${scriptname}" > /dev/null 2>&1
+				elif which sudo > /dev/null 2>&1; then
+					echo -e "\e[1;33mPer proseguire con l'aggiornamento occorre concedere i permessi di amministratore\e[0m"
+					sudo mv /tmp/"${scriptname}" "${scriptfolder}"
+					sudo chown root:root "${scriptfolder}${scriptname}" > /dev/null 2>&1
+					sudo chmod 755 "${scriptfolder}${scriptname}" > /dev/null 2>&1
+					sudo chmod +x "${scriptfolder}${scriptname}" > /dev/null 2>&1
+				else
+					echo -e "\e[1;31m	Errore durante l'aggiornamento di questo script!
+Permesso negato!
+\e[0m"
+				fi
+			else
+				echo -e "\e[1;31m	Errore durante il download!
+\e[0m"
+			fi
+			LOCAL_VERSION="$(cat "${0}" | grep "# Version:" | head -n 1)"
+			if echo "$LOCAL_VERSION" | grep -q "$UPSTREAM_VERSION"; then
 				echo -e "\e[1;34m	Fatto!
 \e[0m"
 				exec "${scriptfolder}${scriptname}"
+			else
+				echo -e "\e[1;31m	Errore durante l'aggiornamento di questo script!
+\e[0m"
 			fi
 		fi
 	fi
+fi
 fi
 
 for name in curl dig hostname sed wget
@@ -301,7 +331,7 @@ givemehelp(){
 echo "
 # current-ip
 
-# Version:    1.5.10
+# Version:    1.5.12
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
