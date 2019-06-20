@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version:    1.5.14
+# Version:    1.5.16
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
@@ -101,11 +101,27 @@ Permesso negato!
 fi
 fi
 
+#echo -n "Checking dependencies... "
 for name in curl dig hostname sed wget
 do
-  [[ $(which $name 2>/dev/null) ]] || { echo -en "\n$name è richiesto da questo script. Utilizza 'sudo apt-get install $name'";deps=1; }
+if which $name > /dev/null; then
+	echo -n
+else
+	if echo $name | grep -xq "dig"; then
+		name="dnsutils"
+	fi
+	if [ -z "${missing}" ]; then
+		missing="$name"
+	else
+		missing="$missing $name"
+	fi
+fi
 done
-[[ $deps -ne 1 ]] && echo "" || { echo -en "\nInstalla le dipendenze necessarie e riavvia questo script\n";exit 1; }
+if ! [ -z "${missing}" ]; then
+	echo -e "\e[1;31mQuesto script dipende da \e[1;34m$missing\e[1;31m. Utilizza \e[1;34msudo apt-get install $missing
+\e[1;31mInstalla le dipendenze necessarie e riavvia questo script.\e[0m"
+	exit 1
+fi
 
 CURRENT_FILE="$LOGNAME"@"$HOSTNAME"_current.txt
 CURRENT="$CURRENT_PATH/$CURRENT_FILE"
@@ -288,7 +304,9 @@ esac
 
 # Controllo indirizzo ip pubblico del server
 check_ip(){
-for pid in $(pgrep -f "current-ip --current-$NUM"); do
+processpath="${0}"
+processname="${processpath##*/}"
+for pid in $(pgrep -f "$processname --current-$NUM"); do
     if [ $pid != $$ ]; then
         kill -9 $pid
     fi 
@@ -331,7 +349,7 @@ givemehelp(){
 echo "
 # current-ip
 
-# Version:    1.5.12
+# Version:    1.5.16
 # Author:     KeyofBlueS
 # Repository: https://github.com/KeyofBlueS/current-ip
 # License:    GNU General Public License v3.0, https://opensource.org/licenses/GPL-3.0
